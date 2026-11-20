@@ -1,32 +1,47 @@
 import { useState } from 'react'
 import IdeaForm from './components/IdeaForm'
 import IdeaList from './components/IdeaList'
-import { useIdeas } from './hooks/useIdeas'
-import type { Idea } from './types'
+import TaskList from './components/TaskList'
+import { useBoard } from './hooks/useBoard'
+import type { Idea, Task } from './types'
 import './App.css'
 
 function App() {
   const {
     ideas,
+    sortedTasks,
     blocked,
+    ideaBlocked,
+    taskBlocked,
     notice,
     saveError,
     addIdea,
     editIdea,
     deleteIdea,
     clearIdeas,
-  } = useIdeas()
+    convertIdeaToTask,
+    convertTaskToIdea,
+    editTask,
+    setPriority,
+    setStatus,
+    deleteTask,
+    clearTasks,
+  } = useBoard()
+
   // Held in memory only, so a reload always returns to the list.
   const [editingId, setEditingId] = useState<string | null>(null)
-  const editing = ideas.find((idea) => idea.id === editingId)
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null)
 
-  function handleDelete(idea: Idea) {
+  const editing = ideas.find((idea) => idea.id === editingId)
+  const editingTask = sortedTasks.find((task) => task.id === editingTaskId)
+
+  function handleDeleteIdea(idea: Idea) {
     if (window.confirm(`Delete this idea?\n\n${idea.text}`)) {
       deleteIdea(idea.id)
     }
   }
 
-  function handleClearAll() {
+  function handleClearIdeas() {
     if (
       window.confirm(
         `Delete all ${ideas.length} ${ideas.length === 1 ? 'idea' : 'ideas'}? This cannot be undone.`,
@@ -34,6 +49,30 @@ function App() {
     ) {
       clearIdeas()
     }
+  }
+
+  function handleConvertIdeaToTask(idea: Idea) {
+    convertIdeaToTask(idea.id)
+  }
+
+  function handleDeleteTask(task: Task) {
+    if (window.confirm(`Delete this task?\n\n${task.text}`)) {
+      deleteTask(task.id)
+    }
+  }
+
+  function handleClearTasks() {
+    if (
+      window.confirm(
+        `Delete all ${sortedTasks.length} ${sortedTasks.length === 1 ? 'task' : 'tasks'}? This cannot be undone.`,
+      )
+    ) {
+      clearTasks()
+    }
+  }
+
+  function handleConvertTaskToIdea(task: Task) {
+    convertTaskToIdea(task.id)
   }
 
   return (
@@ -57,7 +96,7 @@ function App() {
           label="Edit idea"
           submitLabel="Save"
           initialText={editing.text}
-          disabled={blocked}
+          disabled={ideaBlocked}
           onSubmit={(text) => {
             const result = editIdea(editing.id, text)
             if (result.saved) setEditingId(null)
@@ -65,18 +104,32 @@ function App() {
           }}
           onCancel={() => setEditingId(null)}
         />
+      ) : editingTask ? (
+        <IdeaForm
+          key={editingTask.id}
+          label="Edit task"
+          submitLabel="Save"
+          initialText={editingTask.text}
+          disabled={taskBlocked}
+          onSubmit={(text) => {
+            const result = editTask(editingTask.id, text)
+            if (result.saved) setEditingTaskId(null)
+            return result
+          }}
+          onCancel={() => setEditingTaskId(null)}
+        />
       ) : (
         <>
           <IdeaForm
             label="New idea"
             submitLabel="Add idea"
-            disabled={blocked}
+            disabled={ideaBlocked}
             onSubmit={addIdea}
           />
           <div className="list-toolbar">
             <button
               type="button"
-              onClick={handleClearAll}
+              onClick={handleClearIdeas}
               disabled={blocked || ideas.length === 0}
             >
               Clear all
@@ -85,8 +138,19 @@ function App() {
           <IdeaList
             ideas={ideas}
             disabled={blocked}
+            onConvertToTask={handleConvertIdeaToTask}
             onEdit={setEditingId}
-            onDelete={handleDelete}
+            onDelete={handleDeleteIdea}
+          />
+          <TaskList
+            tasks={sortedTasks}
+            disabled={blocked}
+            onClearAll={handleClearTasks}
+            onConvertToIdea={handleConvertTaskToIdea}
+            onEdit={setEditingTaskId}
+            onSetPriority={setPriority}
+            onSetStatus={setStatus}
+            onDelete={handleDeleteTask}
           />
         </>
       )}

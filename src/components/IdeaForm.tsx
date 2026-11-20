@@ -1,6 +1,6 @@
 import { useId, useState } from 'react'
 import type { FormEvent } from 'react'
-import type { SubmitResult } from '../hooks/useIdeas'
+import type { SubmitResult } from '../types'
 import './IdeaForm.css'
 
 type IdeaFormProps = {

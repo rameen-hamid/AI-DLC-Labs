@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { validateIdeaText } from '../ideaRules'
 import { loadIdeas, saveIdeas } from '../ideaStorage'
-import type { Idea } from '../types'
+import type { Idea, SubmitResult } from '../types'
 
-export type SubmitResult = { saved: true } | { saved: false; error?: string }
+export type { SubmitResult }
 
 const UNAVAILABLE_MESSAGE =
   'Local storage is unavailable, so changes cannot be saved.'
