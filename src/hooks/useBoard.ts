@@ -63,6 +63,7 @@ export function useBoard() {
       return false
     }
     setSaveError(null)
+    setTaskLoadIssue(null)
     setTasks(next)
     return true
   }
@@ -95,6 +96,8 @@ export function useBoard() {
       return false
     }
     setSaveError(null)
+    setIdeaLoadIssue(null)
+    setTaskLoadIssue(null)
     setIdeas(nextIdeas)
     setTasks(nextTasks)
     return true
@@ -189,9 +192,7 @@ export function useBoard() {
 
   function clearTasks(): boolean {
     if (taskBlocked || tasks.length === 0) return false
-    const result = commitTasks([])
-    if (result) setTaskLoadIssue(null)
-    return result
+    return commitTasks([])
   }
 
   // ── notice ────────────────────────────────────────────────────────────────
