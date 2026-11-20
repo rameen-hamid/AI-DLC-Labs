@@ -4,11 +4,12 @@ import './IdeaList.css'
 type IdeaListProps = {
   ideas: Idea[]
   disabled?: boolean
+  onConvertToTask: (idea: Idea) => void
   onEdit: (id: string) => void
   onDelete: (idea: Idea) => void
 }
 
-function IdeaList({ ideas, disabled = false, onEdit, onDelete }: IdeaListProps) {
+function IdeaList({ ideas, disabled = false, onConvertToTask, onEdit, onDelete }: IdeaListProps) {
   if (ideas.length === 0) {
     return <p className="empty-state">No ideas yet. Add your first one above.</p>
   }
@@ -19,6 +20,14 @@ function IdeaList({ ideas, disabled = false, onEdit, onDelete }: IdeaListProps) 
         <li key={idea.id} className="idea-item">
           <span className="idea-text">{idea.text}</span>
           <span className="idea-actions">
+            <button
+              type="button"
+              disabled={disabled}
+              aria-label={`Convert idea to task: ${idea.text}`}
+              onClick={() => onConvertToTask(idea)}
+            >
+              To task
+            </button>
             <button
               type="button"
               disabled={disabled}
