@@ -1,0 +1,11 @@
+# Extend gitleaks' built-in rules; only skip folders that are not project source.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Generated or third-party folders"
+paths = [
+  '''node_modules/''',
+  '''dist/''',
+  '''\.tools/''',
+]

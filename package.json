@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "scan:secrets": ".tools/bin/gitleaks git --config .gitleaks.toml --redact --no-banner . && .tools/bin/gitleaks dir --config .gitleaks.toml --redact --no-banner .",
+    "scan:sast": "SEMGREP_SEND_METRICS=off SEMGREP_ENABLE_VERSION_CHECK=0 .tools/semgrep/bin/semgrep scan --metrics=off --disable-version-check --error --config p/javascript --config p/typescript --config p/react src vite.config.ts",
+    "check": "npm run lint && npm run scan:secrets && npm run scan:sast"
   },
   "dependencies": {
     "react": "^19.3.1",
